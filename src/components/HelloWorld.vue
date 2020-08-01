@@ -1,7 +1,7 @@
 <template>
   <div id="calculator">
     <div class="container">
-      <form action>
+      <form @submit="calcPayment">
         <h1>EMI Calculator</h1>
         <label for="price">Purchase price</label>
         <input type="number" name="price" class="currency" v-model.number="price" />
@@ -27,8 +27,10 @@
 
         <label for="rate">Rate</label>
         <input type="number" name="rate" v-model.number="rate" />
+
+        <button type="submit" class="btn">Submit</button>
       </form>
-      <div class="payment">{{ calcPayment }} / month</div>
+      <div class="payment" @click="calcPayment">Rs. {{ emi }} / month</div>
     </div>
   </div>
 </template>
@@ -43,22 +45,24 @@ export default {
       tradeIn: "",
       length: "12",
       rate: "",
+      emi: "",
     };
   },
   methods: {
-    currencyFormat(num) {
-      return "Rs." + num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "Rs.1,");
+    Submit(e) {
+      e.preventDefault();
+      console.log("Testing...");
     },
-    calcPayment() {
+    calcPayment(e) {
+      e.preventDefault();
+      console.log("click");
       var p = this.price - this.downPayment - this.tradeIn;
       var r = this.rate / 1200;
       var n = this.length;
       var i = Math.pow(1 + r, n);
       var payment = (p * r * i) / (i - 1) || 0;
-      return "Rs." + payment.toFixed(0);
-    },
-    numFormat(e) {
-      e.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "Rs.1,");
+      console.log(payment);
+      this.emi = payment.toFixed(2);
     },
   },
 };
@@ -164,5 +168,9 @@ input[type="number"]::-webkit-outer-spin-button {
   body {
     height: 100%;
   }
+}
+.btn {
+  margin-bottom: 20px;
+  padding: 10px 30px;
 }
 </style>
