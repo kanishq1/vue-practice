@@ -1,58 +1,168 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div id="calculator">
+    <div class="container">
+      <form action>
+        <h1>EMI Calculator</h1>
+        <label for="price">Purchase price</label>
+        <input type="number" name="price" class="currency" v-model.number="price" />
+        <br />
+        <label for="down-payment">Down payment</label>
+        <input type="number" name="down-payment" class="currency" v-model.number="downPayment" />
+        <br />
+
+        <label for="trade-in">Trade-in value</label>
+        <input type="number" name="trade-in" class="currency" v-model.number="tradeIn" />
+        <br />
+
+        <label for="length">Term length</label>
+        <select name="length" v-model="length">
+          <option value="12">12 months</option>
+          <option value="24">24 months</option>
+          <option value="36">36 months</option>
+          <option value="48">48 months</option>
+          <option value="60" selected>60 months</option>
+          <option value="72">72 months</option>
+          <option value="84">84 months</option>
+        </select>
+
+        <label for="rate">Rate</label>
+        <input type="number" name="rate" v-model.number="rate" />
+      </form>
+      <div class="payment">{{ calcPayment }} / month</div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "Calculator",
+  data() {
+    return {
+      price: "",
+      downPayment: "",
+      tradeIn: "",
+      length: "12",
+      rate: "",
+    };
+  },
+  methods: {
+    currencyFormat(num) {
+      return "Rs." + num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, "Rs.1,");
+    },
+    calcPayment() {
+      var p = this.price - this.downPayment - this.tradeIn;
+      var r = this.rate / 1200;
+      var n = this.length;
+      var i = Math.pow(1 + r, n);
+      var payment = (p * r * i) / (i - 1) || 0;
+      return "Rs." + payment.toFixed(0);
+    },
+    numFormat(e) {
+      e.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "Rs.1,");
+    },
+  },
+};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+h1 {
+  text-align: center;
+  color: #000;
+  margin: 0 0 16px 0;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+p {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 24px;
 }
-li {
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 64px;
+  box-shadow: 2px 2px 96px #111;
+  border-radius: 8px;
+  -webkit-transition: all 0.3s ease-in;
+  transition: all 0.3s ease-in;
+}
+@media (max-width: 512px) {
+  .container {
+    padding: 32px;
+    -webkit-transition: all 0.3s ease-in;
+    transition: all 0.3s ease-in;
+  }
+}
+@media (max-width: 360px) {
+  .container {
+    padding: 16px;
+    -webkit-transition: all 0.3s ease-in;
+    transition: all 0.3s ease-in;
+  }
+}
+
+label {
   display: inline-block;
-  margin: 0 10px;
+  width: 25%;
+  min-width: 128px;
+  margin-bottom: 8px;
+  font-weight: bold;
 }
-a {
-  color: #42b983;
+
+input,
+select {
+  display: inline-block;
+  background-color: #fff;
+  color: #888;
+  border: 2px solid #888;
+  border-radius: 2px;
+  height: 56px;
+  width: 100%;
+  font-size: 24px;
+  padding: 0 16px;
+  margin-bottom: 24px;
+}
+input:focus,
+select:focus {
+  background-color: #fff;
+  color: #3200ff;
+  border-color: #3200ff;
+  outline: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.payment {
+  color: #000;
+  font-size: 48px;
+  text-align: center;
+  font-weight: bold;
+  -webkit-transition: all 0.3s ease-in;
+  transition: all 0.3s ease-in;
+}
+@media (max-width: 512px) {
+  .payment {
+    font-size: 40px;
+    -webkit-transition: all 0.3s ease-in;
+    transition: all 0.3s ease-in;
+  }
+}
+@media (max-width: 400px) {
+  .payment {
+    font-size: 32px;
+    -webkit-transition: all 0.3s ease-in;
+    transition: all 0.3s ease-in;
+  }
+}
+
+@media (max-height: 750px) {
+  body {
+    height: 100%;
+  }
 }
 </style>
